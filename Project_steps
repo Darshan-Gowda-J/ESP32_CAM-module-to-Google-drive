@@ -1,0 +1,12 @@
+Open arduino ide.
+Select the esp32 board (if not seen download it from board manager).
+Select AI-thinker after connecting esp32-cam-module(OV2640 & beyond), below specs board doesn't support jpeg format for capturing image but only supprted for streaming (for that use RGB565, grayscale and others).
+Paste the main arduino.ino code into arduino ide.
+Install all base64 libraries from library manager.
+If you can't install then copy and paste both base64.h and base64.cpp file as new file in the same project.
+Make required changes like wifi name and password.
+Add Deployment Id create from google script.
+Now compile and uplaod the code to the esp32 cam board.
+After uplaoding hard reseting should be done for that follow these steps: 
+1)remove the usb cable connection, press both rst and i00 button on esp32-cam base board (below board which is connect to usb), this is done for downloading code into the board. 
+2) After pressing rst and i00 button then connect usb connection and then press rst button that is behind the esp32-cam module (it will uplaod the code into esp32-cam module).
