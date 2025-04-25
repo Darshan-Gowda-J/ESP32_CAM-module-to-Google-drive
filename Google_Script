@@ -19,4 +19,5 @@ function doPost(e) {
 
   const file = subFolder.createFile(blob);
   return ContentService.createTextOutput("Upload Successful: " + file.getUrl());
+
 }
