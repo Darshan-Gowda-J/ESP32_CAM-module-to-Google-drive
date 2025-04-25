@@ -1,0 +1,80 @@
+1. Included Libraries
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
+#include "Base64.h"
+#include "esp_camera.h"
+These libraries are required for:
+•	WiFi: Internet connection.
+•	WiFiClientSecure: HTTPS connection to Google Apps Script.
+•	soc/soc.h / rtc_cntl_reg.h: Disabling brownout detector to avoid resets.
+•	Base64.h: Image encoding before sending.
+•	esp_camera.h: Controlling camera module.
+
+2. Camera Pin Configuration
+The GPIO pins are mapped according to the AI Thinker ESP32-CAM module:
+#define PWDN_GPIO_NUM     32
+#define RESET_GPIO_NUM    -1
+...
+#define PCLK_GPIO_NUM     22
+Also sets GPIO 4 (FLASH_LED_PIN) to control the built-in white LED flash.
+
+3. WiFi Credentials
+const char* ssid = "";
+const char* password = "";
+Set your Wi-Fi SSID and password here.
+
+4. Google Drive Upload Parameters
+String myDeploymentID = "";
+String myMainFolderName = "ESP32-CAM";
+Replace myDeploymentID with your Google Apps Script Deployment ID, and myMainFolderName with the folder name on Google Drive.
+
+5. Timer Configuration
+const int Interval = 60000; // 60 seconds
+Sets the interval for taking and sending photos (every 60 seconds).
+
+6. LED Flash Control
+bool LED_Flash_ON = true;
+When true, the flash LED will light up during photo capture.
+
+7. WiFi Connection Check
+void Test_Con()
+This function checks connection to script.google.com (Google Apps Script endpoint) and ensures HTTPS communication is successful.
+
+8. Photo Capture and Upload
+void SendCapturedPhotos()
+This function:
+1.	Connects to Google Apps Script endpoint.
+2.	Turns on the LED (if enabled).
+3.	Captures an image using the ESP32-CAM.
+4.	Converts image to Base64 in chunks.
+5.	Sends the Base64-encoded image using chunked HTTP POST request.
+6.	Waits for response and flashes the LED to indicate success or failure.
+
+9. Setup Routine
+void setup()
+Initializes system components:
+•	Disables brownout detector (prevents boot crash).
+•	Connects to Wi-Fi with timeout and auto-reboot on failure.
+•	Initializes camera with desired resolution (FRAMESIZE_SXGA = 1280×1024).
+•	Initializes GPIO for the flash LED.
+•	Calls Test_Con() to verify secure HTTPS connection.
+•	Outputs setup status to Serial Monitor.
+
+10. Main Loop
+void loop()
+Every Interval milliseconds, it triggers the photo capture and upload process by calling SendCapturedPhotos().
+
+Additional Notes
+•	Image Format: JPEG (PIXFORMAT_JPEG) is used for compression efficiency.
+•	Base64 Encoding: Required for sending binary JPEG data in HTTP requests.
+•	PSRAM Check: Automatically uses higher resolution if PSRAM is detected.
+•	Chunked Transfer: Sends image in parts to reduce memory overhead and improve reliability.
+•	Visual Feedback: LED blinks to indicate connection or photo status.
+
+Google Apps Script Setup (Summary)
+1.	Create a Google Apps Script project.
+2.	Add the script to handle image data and save to Drive.
+3.	Deploy the script as a web app.
+4.	Set myDeploymentID to your script's deployment ID.
