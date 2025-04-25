@@ -1,0 +1,22 @@
+function doPost(e) {
+  if (!e || !e.postData) {
+    return ContentService.createTextOutput("Error: No data received").setMimeType(ContentService.MimeType.TEXT);
+  }
+
+  const name = Utilities.formatDate(new Date(), 'GMT+7', 'yyyyMMdd-HHmmss') + '.jpg'; // Change GMT+7 with your timezone
+  const subFolderName = Utilities.formatDate(new Date(), 'GMT+7', 'yyyyMMdd');
+  const folderName = (e.parameters && e.parameters.folder) ? e.parameters.folder[0] : 'ESP32-CAM';
+  const data = Utilities.base64Decode(e.postData.contents);
+  const blob = Utilities.newBlob(data, 'image/jpeg', name);
+
+  let folder;
+  const folders = DriveApp.getFoldersByName(folderName);
+  folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
+
+  let subFolder;
+  const subFolders = folder.getFoldersByName(subFolderName);
+  subFolder = subFolders.hasNext() ? subFolders.next() : folder.createFolder(subFolderName);
+
+  const file = subFolder.createFile(blob);
+  return ContentService.createTextOutput("Upload Successful: " + file.getUrl());
+}
